@@ -1,0 +1,621 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -48
+      ],
+      "id": "e2be86d8-e976-4ff3-a992-9937ae850ce2",
+      "webhookId": "0e398a83-675c-44c9-9213-dd265d088db4"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "9b506215-7c8c-4c31-b59e-918dd3592b8f",
+                    "leftValue": "={{ $json.output[0].content[0].text.toLowerCase() }}",
+                    "rightValue": "hot",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2903bd0a-4044-4e93-b81b-083a46688ecd",
+                    "leftValue": "={{ $json.output[0].content[0].text.toLowerCase() }}",
+                    "rightValue": "warm",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "20cede47-5535-49f5-b711-d1ed800b1a41",
+                    "leftValue": "={{ $json.output[0].content[0].text.toLowerCase() }}",
+                    "rightValue": "cold",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Tiered Decision Router",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        192,
+        -64
+      ],
+      "id": "a525d1fb-ae71-40d3-8c66-82311cd79ec0",
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo",
+          "mode": "list",
+          "cachedResultName": "GPT-3.5-TURBO"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Extract the lead details from the following inquiry. \nClassify the lead as \"Hot\" (budget is $5000 or more), \"Warm\" (budget is between $1000 and $4999), or \"Cold\" (budget is under $1000).\n\nReturn ONLY a raw JSON object (no markdown, no backticks) with exactly these four keys: name, email, budget, tier.\n\nInquiry: {{ $json.body.inquiry }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -80,
+        -48
+      ],
+      "id": "cb24800b-8129-44c7-87ec-57623219af3d",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "b99CICmLBIGBdFh5",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appePBJ4QwgASVL27",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appePBJ4QwgASVL27"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblBmV3WjCKRE2my1",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appePBJ4QwgASVL27/tblBmV3WjCKRE2my1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ JSON.parse($json.output[0].content[0].text).name }}",
+            "Email": "={{ JSON.parse($json.output[0].content[0].text).email }}",
+            "Budget": "={{ parseInt(JSON.parse($json.output[0].content[0].text).budget.toString().replace(/[^0-9]/g, ''), 10) }}",
+            "Tier": "hot"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tier",
+              "displayName": "Tier",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachment Summary",
+              "displayName": "Attachment Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": "={{ true }}"
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        -144
+      ],
+      "id": "8a0abf66-eed5-4fe2-99ac-a3deabda5f65",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "UoOwdW6gMHtCOd21",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "waleedgohar167@gmail.com",
+        "toEmail": "=={{ $json.fields.Email }}",
+        "subject": "Fast-tracking your custom n8n workflow!",
+        "html": "=Hi {{ $json.fields.Name }},\n\nThanks for reaching out.\n\nWe received your high-priority request regarding the n8n workflow. \n\nBecause you have an urgent timeline and a confirmed budget of {{ $json.fields.Budget }}, I have flagged your file for our VIP queue. \n\nLet's jump on a quick 10-minute call tomorrow to finalize the architecture.\n\nBest,\nThe Automation Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        464,
+        -144
+      ],
+      "id": "c853ce3e-a30d-40cb-adab-3d1d04143a71",
+      "name": "Send an Email",
+      "webhookId": "33a67462-e863-443a-8b05-d39c566a3c48",
+      "credentials": {
+        "smtp": {
+          "id": "4S8qJErD8uqyeQ8p",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appePBJ4QwgASVL27",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appePBJ4QwgASVL27"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblBmV3WjCKRE2my1",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appePBJ4QwgASVL27/tblBmV3WjCKRE2my1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ JSON.parse($json.output[0].content[0].text).name }}",
+            "Email": "={{ JSON.parse($json.output[0].content[0].text).email }}",
+            "Budget": "={{ parseInt(JSON.parse($json.output[0].content[0].text).budget.toString().replace(/[^0-9]/g, ''), 10) }}",
+            "Tier": "warm"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tier",
+              "displayName": "Tier",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachment Summary",
+              "displayName": "Attachment Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": "={{ true }}"
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        64
+      ],
+      "id": "426e2714-02f4-47eb-bac8-ed58291ffccc",
+      "name": "Create a record1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "UoOwdW6gMHtCOd21",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "waleedgohar167@gmail.com",
+        "toEmail": "=={{ $json.fields.Email }}",
+        "subject": "Exploring your custom n8n workflow",
+        "html": "=Hi {{ $json.fields.Name }},\n\nThank you for reaching out about a custom n8n workflow for your team. \n\nSince you are currently exploring options and not in a rush, I'd love to send over our capabilities deck and some recent case studies. Let me know if you would like to schedule a relaxed discovery call next week to see what is possible.\n\nBest,\nThe Automation Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        576,
+        64
+      ],
+      "id": "d9071090-2825-41d9-b118-3b7619c62b0d",
+      "name": "Send an Email1",
+      "webhookId": "33a67462-e863-443a-8b05-d39c566a3c48",
+      "credentials": {
+        "smtp": {
+          "id": "4S8qJErD8uqyeQ8p",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appePBJ4QwgASVL27",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appePBJ4QwgASVL27"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblBmV3WjCKRE2my1",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appePBJ4QwgASVL27/tblBmV3WjCKRE2my1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ JSON.parse($json.output[0].content[0].text).name }}",
+            "Email": "={{ JSON.parse($json.output[0].content[0].text).email }}",
+            "Budget": "={{ parseInt(JSON.parse($json.output[0].content[0].text).budget.toString().replace(/[^0-9]/g, ''), 10) }}",
+            "Tier": "cold"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tier",
+              "displayName": "Tier",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachment Summary",
+              "displayName": "Attachment Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": "={{ true }}"
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        144
+      ],
+      "id": "1e4ac1b0-be56-4621-8913-90a5f05f9a54",
+      "name": "Create a record2",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "UoOwdW6gMHtCOd21",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "waleedgohar167@gmail.com",
+        "toEmail": "=={{ $json.fields.Email }}",
+        "subject": "Re: Your inquiry",
+        "html": "=Hi {{ $json.fields.Name }},\n\nThank you for reaching out. We are a specialized automation agency and are not currently looking to purchase external B2B leads or outside services. \n\nWe will keep your contact information on file should our needs change in the future.\n\nBest,\nThe Automation Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        608,
+        144
+      ],
+      "id": "72fd2c9b-22e6-4e09-8d05-037324bcebd0",
+      "name": "Send an Email2",
+      "webhookId": "33a67462-e863-443a-8b05-d39c566a3c48",
+      "credentials": {
+        "smtp": {
+          "id": "4S8qJErD8uqyeQ8p",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Tiered Decision Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiered Decision Router": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a record1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a record2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record1": {
+      "main": [
+        [
+          {
+            "node": "Send an Email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record2": {
+      "main": [
+        [
+          {
+            "node": "Send an Email2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e5aa4d25-6c68-420a-8619-a57c9ef6dfbc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dd23d8ab51bf5e0c5f95a02f22b0abb239639dbf53511a11754335f125fd0894"
+  },
+  "nodeGroups": [],
+  "id": "gKWeOw8qtnVpYenh",
+  "tags": []
+}

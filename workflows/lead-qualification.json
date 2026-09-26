@@ -1,0 +1,24 @@
+{
+  "nodes": [
+    {
+      "parameters": { "path": "inbound-lead", "responseMode": "lastNode", "options": {} },
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [ 200, 300 ]
+    },
+    {
+      "parameters": { "model": "gpt-3.5-turbo", "prompt": "={{$json.body.inquiry}}" },
+      "name": "Extraction & Scoring (gpt-3.5-turbo)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [ 400, 300 ]
+    },
+    {
+      "parameters": { "dataType": "string", "value1": "={{$json.lead_tier}}", "rules": { "rules": [ { "value2": "hot" }, { "value2": "warm" }, { "value2": "cold" } ] } },
+      "name": "Tiered Decision Router",
+      "type": "n8n-nodes-base.switch",
+      "position": [ 600, 300 ]
+    }
+  ],
+  "connections": {}
+}
