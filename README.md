@@ -48,3 +48,20 @@ This automated pipeline captures inbound inquiries instantly, utilizing an LLM t
 1.  **Model Upgrade:** Upgrading from GPT-3.5-TURBO to GPT-4o would significantly improve classification accuracy for highly ambiguous, multi-paragraph inquiries, and reduce hallucinations when extracting poorly formatted contact data.
 2.  **Calendar Integration:** The current system replies to Hot leads but does not secure a meeting. Adding a Calendly routing node for Hot leads would decrease friction.
 3.  **Missing Data Handling:** If a user omits their budget entirely, the current prompt may fail or default. Future iterations require a specific error-handling path for missing variables.
+
+## Business Value
+
+A client evaluating this system must understand its immediate commercial impact.
+
+**Weekly Time Saving Calculation**
+For a business processing 50 inbound inquiries per week, manual triage (reading, evaluating, and responding at 15 minutes per lead) consumes 12.5 manual hours weekly. At a staff cost of $25/hr, this system eliminates $16,250 in annual administrative waste while reducing response time to zero.
+
+**Pricing Structure**
+* **Basic Tier ($997 Setup):** Complete n8n workflow deployment, GPT-3.5-TURBO integration, and standard Airtable logging.
+* **Standard Tier ($1,497 Setup + $97/mo):** Includes Basic tier, custom prompt engineering for complex edge cases, tailored email copywriting across all tiers, and active server maintenance.
+* **Premium Tier ($2,497 Setup + $297/mo):** Includes Standard tier, an upgrade to GPT-4o for superior logic routing, automated calendar booking for Hot leads, and bi-weekly pipeline analytics reporting.
+
+**Industry Applications**
+1. **Real Estate Brokerages:** Automatically qualifying property inquiries based on pre-approval amounts to route high-net-worth buyers directly to senior brokers.
+2. **Legal Practices:** Triaging initial case consultation forms to efficiently separate high-settlement personal injury cases from low-value inquiries.
+3. **High-Ticket Consulting:** Evaluating inbound application forms based on current monthly recurring revenue (MRR) to automatically protect the consultant's time from unqualified leads.
